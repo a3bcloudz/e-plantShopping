@@ -1,10 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import './ProductList.css'
+import { useDispatch } from 'react-redux';
+import { addItem } from './CartSlice';
+import './ProductList.css';
 import CartItem from './CartItem';
 function ProductList({ onHomeClick }) {
+    const dispatch = useDispatch();
     const [showCart, setShowCart] = useState(false);
     const [showPlants, setShowPlants] = useState(false);
     const [cartItems, setCartItems] = useState([]);
+    const [addedToCart, setAddedToCart] = useState({});
+
     // ...existing plantsArray and styleObj definitions...
 
     const plantsArray = [
@@ -256,6 +261,13 @@ function ProductList({ onHomeClick }) {
     };
 
     const handleAddToCart = (plant) => {
+        dispatch(addItem(plant)); // Dispatch the action to add the plant to the cart
+        
+        setAddedToCart(prevState => ({
+            ...prevState,
+            [plant.name]: true
+        }));
+        
         setCartItems([...cartItems, plant]);
         alert(`${plant.name} added to cart!`);
     };
@@ -288,6 +300,22 @@ function ProductList({ onHomeClick }) {
                                         >
                                             Add to Cart
                                         </button>
+                                        <button
+                                            className="product-button"
+                                            onClick={() => handleAddToCart(plant)}
+                                            disabled={addedToCart[plant.name]}
+                                        >
+                                            {addedToCart[plant.name] ? 'Added to Cart' : 'Add to Cart'}
+                                        </button>
+                                        <style>
+                                            {`
+                                                .product-button:disabled {
+                                                    background-color: #cccccc;
+                                                    cursor: not-allowed;
+                                                    opacity: 0.7;
+                                                }
+                                            `}
+                                        </style>
                                     </div>
                                 ))}
                             </div>
